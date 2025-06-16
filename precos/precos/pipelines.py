@@ -92,9 +92,25 @@ class ExcelPipeline:
         cols = ['Id do produto', 'nome'] + [f'valor_{l}' for l in lojas] + ['média']
         df = df[cols]
 
+        # salva planilha do resultado atual
         with pd.ExcelWriter(excel_file, engine='openpyxl') as writer:
             df.to_excel(writer, index=False, sheet_name='Preços')
         spider.logger.info(f"Arquivo {excel_file} gerado com sucesso.")
+
+        # ---------------- historico de execucoes ----------------
+        from datetime import datetime
+
+        df_hist = df.copy()
+        df_hist['data_coleta'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+        history_file = 'historico_precos.xlsx'
+        if os.path.exists(history_file):
+            df_exist = pd.read_excel(history_file)
+            df_hist = pd.concat([df_exist, df_hist], ignore_index=True)
+
+        with pd.ExcelWriter(history_file, engine='openpyxl') as writer:
+            df_hist.to_excel(writer, index=False, sheet_name='Historico')
+        spider.logger.info(f"Arquivo {history_file} atualizado com sucesso.")
         # Remove progresso ao final
         if os.path.exists('progress.json'):
             os.remove('progress.json')
