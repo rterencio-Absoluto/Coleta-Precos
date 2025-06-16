@@ -1,6 +1,7 @@
 import subprocess
 import time
 import logging
+import os
 
 # Configurar logging
 logging.basicConfig(
@@ -12,10 +13,12 @@ logger = logging.getLogger(__name__)
 def run_spider(spider_name):
     logger.info(f"Iniciando execução da spider: {spider_name}")
     try:
+        project_dir = os.path.dirname(os.path.abspath(__file__))
         result = subprocess.run(
             ['scrapy', 'crawl', spider_name],
             capture_output=True,
-            text=True
+            text=True,
+            cwd=project_dir
         )
         if result.returncode == 0:
             logger.info(f"Spider {spider_name} executada com sucesso")
