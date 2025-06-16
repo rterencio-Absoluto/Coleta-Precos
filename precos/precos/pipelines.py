@@ -101,7 +101,7 @@ class ExcelPipeline:
         from datetime import datetime
 
         df_hist = df.copy()
-        df_hist['data_coleta'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        df_hist['data_coleta'] = datetime.now().strftime('%Y-%m-%d')
 
         history_file = 'historico_precos.xlsx'
         if os.path.exists(history_file):
